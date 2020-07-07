@@ -11,7 +11,7 @@ class PizzaController extends Controller
         // get data from db
         $pizzas = Pizza::all();
 
-        return view('pizzas', [
+        return view('pizzas.index', [
             'pizzas' => $pizzas,
             'name' => request('name')
             ]);
@@ -19,6 +19,27 @@ class PizzaController extends Controller
 
     public function show($id){
         // Use ID to query db for a record
-        return view('details', ['id' => $id]);
+        $pizza = Pizza::findOrFail($id);
+        return view('pizzas.show', ['pizza' => $pizza]);
+    }
+
+    public function create() {
+        return view('pizzas.create');
+    }
+
+    public function store() {
+        $pizza = new Pizza();
+        $pizza->name = request('name');
+        $pizza->type = request('type');
+        $pizza->base = request('base');
+        $pizza->toppings = request('toppings');
+        $pizza->save();
+        return redirect('/')->with('msg', 'Thanks for your order');
+    }
+
+    public function destroy($id) {
+        $pizza = Pizza::findOrFail($id);
+        $pizza->delete();
+        return redirect('/pizzas');
     }
 }
